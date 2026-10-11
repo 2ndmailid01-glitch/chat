@@ -1,38 +1,177 @@
-
-
 const WORKER_URL = "https://dilseai.2ndmailid01.workers.dev/";
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#170f2b">
+  <title>DilSe AI ❤️</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      background: #100b1d;
+      color: #fff;
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 650px;
+      margin: auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #170f2b;
+    }
+    header {
+      padding: 20px 16px;
+      background: #24143b;
+      border-bottom: 1px solid #45305c;
+    }
+    header h1 { margin: 0; font-size: 25px; }
+    header p { margin: 6px 0 0; color: #d5c5e8; font-size: 14px; }
+    #status { color: #b9f6ca; font-size: 12px; margin-top: 8px; }
+    #chat {
+      flex: 1;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 55vh;
+    }
+    .bubble {
+      padding: 12px 14px;
+      border-radius: 17px;
+      max-width: 88%;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .bot {
+      align-self: flex-start;
+      background: #302142;
+      border: 1px solid #49325d;
+    }
+    .user {
+      align-self: flex-end;
+      background: #8b45cb;
+    }
+    .composer {
+      position: sticky;
+      bottom: 0;
+      padding: 12px;
+      background: #211532;
+      border-top: 1px solid #45305c;
+    }
+    form { display: flex; gap: 8px; }
+    textarea {
+      flex: 1;
+      min-width: 0;
+      resize: vertical;
+      min-height: 48px;
+      max-height: 120px;
+      border: 1px solid #5d4674;
+      background: #120c1e;
+      color: white;
+      border-radius: 14px;
+      padding: 13px;
+      font: inherit;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 0 17px;
+      background: #d46af0;
+      color: #190b23;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    button:disabled { opacity: .5; }
+    .note {
+      font-size: 11px;
+      color: #bcaecb;
+      margin: 10px 3px 0;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>💜 DilSe AI</h1>
+      <p>Tumhari friendly Hindi + Hinglish AI companion</p>
+      <div id="status">● Chat ready</div>
+    </header>
 
-document.getElementById("send").onclick = async () => {
-  const input = document.getElementById("message");
-  const reply = document.getElementById("reply");
-  const message = input.value.trim();
+    <section id="chat" aria-live="polite">
+      <div class="bubble bot">Hey! ❤️ Main DilSe AI hoon. Mujhse Hindi ya Hinglish mein baat karo. Aaj tumhare dil mein kya hai?</div>
+    </section>
 
-  if (!message) {
-    reply.textContent = "Pehle apna message likho ❤️";
-    return;
-  }
+    <div class="composer">
+      <form id="chatForm">
+        <textarea id="message" placeholder="Apna message likho..." maxlength="2000" required></textarea>
+        <button id="send" type="submit">Send ❤️</button>
+      </form>
+      <p class="note">AI kabhi galat jawab de sakta hai. Password ya sensitive personal information share mat karo.</p>
+    </div>
+  </main>
 
-  reply.textContent = "DilSe AI soch raha hai... ❤️";
+  <script>
+    const WORKER_URL = "https://dilseai.2ndmailid01.workers.dev/";
 
-  try {
-    const response = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
-    });
+    const chat = document.getElementById("chat");
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("message");
+    const send = document.getElementById("send");
+    const status = document.getElementById("status");
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "AI reply nahi aa raha.");
+    function addBubble(text, who) {
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + who;
+      bubble.textContent = text;
+      chat.appendChild(bubble);
+      bubble.scrollIntoView({ behavior: "smooth", block: "end" });
+      return bubble;
     }
 
-    reply.textContent = data.reply || "Dobara try karo ❤️";
-  } catch (error) {
-    reply.textContent =
-      "Connection nahi ho pa raha. Worker URL aur AI binding check karo.";
-  }
-};
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
 
+      const message = input.value.trim();
+      if (!message || send.disabled) return;
+
+      addBubble(message, "user");
+      input.value = "";
+      send.disabled = true;
+      status.textContent = "● DilSe AI soch raha hai...";
+      const loading = addBubble("Ek pal, main jawab soch raha hoon ❤️", "bot");
+
+      try {
+        const response = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: message })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Server error " + response.status);
+        }
+
+        loading.textContent = data.reply || "Mujhe dobara message bhejo ❤️";
+        status.textContent = "● Connected";
+      } catch (error) {
+        loading.textContent =
+          "Abhi AI reply nahi aa paya. Internet check karke dobara try karo. Agar problem rahe, backend ki binding aur logs check karne honge.";
+        status.textContent = "● Connection problem";
+      } finally {
+        send.disabled = false;
+        input.focus();
+      }
+    });
+  </script>
+</body>
+</html>
 
