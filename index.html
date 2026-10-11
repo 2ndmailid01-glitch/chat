@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DilSe AI ❤️</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#15111f;color:#fff;
+font-family:system-ui,sans-serif}
+header{padding:20px;text-align:center;background:#24182f}
+h1{margin:0;color:#ff78ad}
+main{max-width:600px;margin:auto;padding:20px}
+.card{background:#282033;border-radius:18px;padding:20px}
+p{line-height:1.6;color:#e8dcec}
+button{background:#ed5796;color:white;border:0;
+border-radius:12px;padding:13px;cursor:pointer}
+input{width:100%;padding:14px;border-radius:12px;
+border:1px solid #65516e;background:#17131e;color:white;
+margin:10px 0}
+#reply{white-space:pre-wrap}
+small{color:#c5b5d0}
+</style>
+</head>
+<body>
+<header>
+<h1>❤️ DilSe AI</h1>
+<p>Your AI companion · Hindi + Hinglish</p>
+</header>
+<main>
+<div class="card">
+<h2>Namaste! 💜</h2>
+<p>Romance, relationships aur sexual wellness par baat karein.
+Main ek AI companion hoon, real insaan nahi.</p>
+<p><small>18+ adults only. Respect aur consent zaroori hain.</small></p>
+<label for="message">Apna message likho:</label>
+<input id="message" placeholder="Hello, kaise ho?">
+<button id="send">Send ❤️</button>
+<p id="reply" aria-live="polite">Hey! 😊 Mujhe message bhejo.</p>
+</div>
+</main>
+<script>
+document.getElementById("send").onclick = () => {
+ const input = document.getElementById("message");
+ const reply = document.getElementById("reply");
+ if (!input.value.trim()) {
+   reply.textContent = "Pehle apna message likho 😊";
+   return;
+ }
+ reply.textContent =
+   "Tumhara message: " + input.value +
+   "\n\nYe website ka demo hai. Real AI replies ke liye AI backend connect karna hoga.";
+};
+</script>
+</body>
+</html>
